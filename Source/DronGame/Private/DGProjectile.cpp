@@ -3,25 +3,46 @@
 
 #include "DGProjectile.h"
 
-// Sets default values
+#include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+
+
 ADGProjectile::ADGProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetCollisionProfileName("NoCollision");
+	RootComponent = MeshComp;
 
+	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	SphereComp->SetCollisionProfileName("OverlapAllDynamic");
+	SphereComp->SetSphereRadius(64.0f);
+	SphereComp->SetupAttachment(RootComponent);
+	
+	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMoveComp"));
+	MovementComp->bRotationFollowsVelocity = true;
+	MovementComp->bInitialVelocityInLocalSpace = true;
+	MovementComp->ProjectileGravityScale = 0.0f;
+	MovementComp->InitialSpeed = 2500;
+
+	InitialLifeSpan = 5.0f;
 }
 
-// Called when the game starts or when spawned
+
 void ADGProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
 	
 }
 
-// Called every frame
-void ADGProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
+void ADGProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	if (OtherActor != GetInstigator())
+	{
+		Destroy();
+	}
 }
 

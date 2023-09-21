@@ -1,17 +1,15 @@
 #include "DGDron.h"
 
+#include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 
 
 ADGDron::ADGDron()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	SphereComp->SetCollisionResponseToAllChannels(ECR_Block);
-	SphereComp->SetCollisionProfileName("OverlapAllBlock")
+	SphereComp->SetCollisionProfileName("OverlapAllBlock");
 	SphereComp->SetSphereRadius(75.0f);
 	RootComponent = SphereComp;
 
@@ -34,6 +32,8 @@ void ADGDron::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("LookUp", this, &ADGDron::LookUp);
 	PlayerInputComponent->BindAxis("Turn", this, &ADGDron::LookTurn);
+
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ADGDron::Fire);
 }
 
 
@@ -92,16 +92,51 @@ void ADGDron::LookTurn(float Value)
 }
 
 
-void ADGDron::BeginPlay()
+void ADGDron::Fire()
 {
-	Super::BeginPlay();
-	
+	if (ProjectileClass)
+	{
+		FVector StartLine = CameraComp->GetComponentLocation();
+		FRotator CameraRotator = CameraComp->GetComponentRotation();
+
+		FVector EndLine = StartLine + (CameraRotator.Vector() * 1000);
+
+		FCollisionObjectQueryParams CollisionParams;
+		CollisionParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		CollisionParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+
+		FHitResult HitResult;
+
+		GetWorld()->LineTraceSingleByObjectType(HitResult, StartLine, EndLine, CollisionParams, Params);
+		
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Instigator = this;
+
+		FTransform SpawnTransform;
+		
+		if (HitResult.GetActor())
+		{
+			FVector Hit = HitResult.ImpactPoint - StartLine;
+			Hit.Normalize();
+			SpawnTransform = FTransform(Hit.Rotation(), StartLine);
+		}
+		else
+		{
+			FVector Hit = EndLine - StartLine;
+			Hit.Normalize();
+			SpawnTransform = FTransform(Hit.Rotation(), StartLine);
+		}
+		
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+	}
 }
 
 
-void ADGDron::NotifyActorBeginOverlap(AActor* OtherActor)
+void ADGDron::BeginPlay()
 {
-	Super::NotifyActorBeginOverlap(OtherActor);
-
+	Super::BeginPlay();
 	
 }

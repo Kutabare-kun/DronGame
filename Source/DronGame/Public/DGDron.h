@@ -20,6 +20,9 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Fire")
+	TSubclassOf<AActor> ProjectileClass;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Coponents")
 	USphereComponent* SphereComp;
 	
@@ -41,13 +44,13 @@ protected:
 	void LookUp(float Value);
 
 	void LookTurn(float Value);
+
+	void Fire();
 	
 	virtual void BeginPlay() override;
 
 public:
 
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

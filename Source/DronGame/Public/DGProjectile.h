@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "DGProjectile.generated.h"
 
+class UProjectileMovementComponent;
+class USphereComponent;
+
 UCLASS()
 class DRONGAME_API ADGProjectile : public AActor
 {
@@ -16,11 +19,20 @@ public:
 	ADGProjectile();
 
 protected:
-	// Called when the game starts or when spawned
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	UStaticMeshComponent* MeshComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	USphereComponent* SphereComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	UProjectileMovementComponent* MovementComp;
+	
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 };
