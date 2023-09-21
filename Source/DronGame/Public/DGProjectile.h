@@ -28,10 +28,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	UProjectileMovementComponent* MovementComp;
-	
-	virtual void BeginPlay() override;
 
-public:	
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float DamageAmount;
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 

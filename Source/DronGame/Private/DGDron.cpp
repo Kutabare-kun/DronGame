@@ -1,6 +1,8 @@
 #include "DGDron.h"
 
-#include "DrawDebugHelpers.h"
+
+#include "DGAttributeComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 
@@ -16,9 +18,20 @@ ADGDron::ADGDron()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->bUsePawnControlRotation = true;
 	CameraComp->SetupAttachment(RootComponent);
+
+	AttributeComp = CreateDefaultSubobject<UDGAttributeComponent>(TEXT("AttributeComp"));
 	
-	ForwardSpeed = 250.0f;
-	UpSpeed = 75.0f;
+	ForwardSpeed = 500.0f;
+	UpSpeed = 150.0f;
+}
+
+
+void ADGDron::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ADGDron::OnHealthChanged);
+	AttributeComp->OnAmmoChanged.AddDynamic(this, &ADGDron::OnAmmoChanged);
 }
 
 
@@ -135,8 +148,37 @@ void ADGDron::Fire()
 }
 
 
+void ADGDron::OnHealthChanged(AActor* InstigatorActor, UDGAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+
+		SetLifeSpan(5.0f);
+	}
+}
+
+
+void ADGDron::OnAmmoChanged(AActor* InstigatorActor, UDGAttributeComponent* OwningComp, float NewAmmo, float Delta)
+{
+	if (NewAmmo <= 0.0f && Delta < 0.0f)
+	{
+		// TODO: Animation, Change Widget via C++ or something else
+	}
+}
+
+
 void ADGDron::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (HealthWidgetClass && HealthWidget == nullptr)
+	{
+		HealthWidget = CreateWidget<UUserWidget>(GetWorld(), HealthWidgetClass);
+		if (HealthWidget)
+		{
+			HealthWidget->AddToViewport();
+		}
+	}
 }

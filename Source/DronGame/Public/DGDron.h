@@ -5,6 +5,7 @@
 #include "DGDron.generated.h"
 
 
+class UDGAttributeComponent;
 class USphereComponent;
 class UCameraComponent;
 
@@ -20,6 +21,12 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> HealthWidgetClass;
+	
+	UPROPERTY()
+	UUserWidget* HealthWidget;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Fire")
 	TSubclassOf<AActor> ProjectileClass;
 
@@ -28,6 +35,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Components")
+	UDGAttributeComponent* AttributeComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float ForwardSpeed;
@@ -47,9 +57,17 @@ protected:
 
 	void Fire();
 	
-	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UDGAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	UFUNCTION()
+	void OnAmmoChanged(AActor* InstigatorActor, UDGAttributeComponent* OwningComp, float NewAmmo, float Delta);
 
 public:
+
+	virtual void BeginPlay() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

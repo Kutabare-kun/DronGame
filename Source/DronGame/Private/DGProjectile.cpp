@@ -3,6 +3,7 @@
 
 #include "DGProjectile.h"
 
+#include "DGAttributeComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -25,14 +26,7 @@ ADGProjectile::ADGProjectile()
 	MovementComp->InitialSpeed = 2500;
 
 	InitialLifeSpan = 5.0f;
-}
-
-
-void ADGProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-
-	
+	DamageAmount = 5.0f;
 }
 
 
@@ -40,9 +34,15 @@ void ADGProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	if (OtherActor != GetInstigator())
+	if (OtherActor && OtherActor != GetInstigator())
 	{
-		Destroy();
+		UDGAttributeComponent* AttributeComp = UDGAttributeComponent::GetAttributes(OtherActor);
+		if (AttributeComp)
+		{
+			if (AttributeComp->IsAlive() && AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount))
+			{
+				Destroy();
+			}
+		}
 	}
 }
-
