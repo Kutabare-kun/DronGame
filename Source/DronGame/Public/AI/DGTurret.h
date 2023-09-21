@@ -4,6 +4,7 @@
 #include "GameFramework/Pawn.h"
 #include "DGTurret.generated.h"
 
+class UDGWorldUserWidget;
 class UDGAttributeComponent;
 class UPawnSensingComponent;
 
@@ -17,6 +18,9 @@ public:
 	ADGTurret();
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UDGWorldUserWidget> SpottedWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp;

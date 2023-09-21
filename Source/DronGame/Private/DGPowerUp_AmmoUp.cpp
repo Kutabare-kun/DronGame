@@ -17,9 +17,9 @@ void ADGPowerUp_AmmoUp::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 
 	UDGAttributeComponent* AttributeComp = UDGAttributeComponent::GetAttributes(OtherActor);
-	if (AttributeComp)
+	if (AttributeComp && AttributeComp->ApplyAmmoChange(this, AmmoUp))
 	{
-		AttributeComp->ApplyAmmoChange(this, AmmoUp);
+		Destroy();
 	}
 }
 

@@ -107,7 +107,7 @@ void ADGDron::LookTurn(float Value)
 
 void ADGDron::Fire()
 {
-	if (ProjectileClass)
+	if (ProjectileClass && AttributeComp->HasAmmo())
 	{
 		FVector StartLine = CameraComp->GetComponentLocation();
 		FRotator CameraRotator = CameraComp->GetComponentRotation();
@@ -143,7 +143,12 @@ void ADGDron::Fire()
 			SpawnTransform = FTransform(Hit.Rotation(), StartLine);
 		}
 		
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+		AActor* Projectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+
+		if (Projectile)
+		{
+			AttributeComp->ApplyAmmoChange(this, -1);
+		}
 	}
 }
 

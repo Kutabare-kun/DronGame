@@ -13,5 +13,15 @@ UCLASS()
 class DRONGAME_API ADGGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+protected:
+	
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
+	
+public:
+
+	UFUNCTION()
+	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 	
 };

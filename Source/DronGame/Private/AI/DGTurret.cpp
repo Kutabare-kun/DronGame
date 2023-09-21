@@ -1,9 +1,11 @@
-#include "DGTurret.h"
+#include "AI\DGTurret.h"
 
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "DGAttributeComponent.h"
+#include "DGWorldUserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Perception/PawnSensingComponent.h"
 
 
@@ -63,6 +65,14 @@ void ADGTurret::OnPawnSeen(APawn* SeenPawn)
 	if (GetTargetActor() != SeenPawn)
 	{
 		SetTargetActor(SeenPawn);
+
+		UDGWorldUserWidget* NewWidget = CreateWidget<UDGWorldUserWidget>(GetWorld(), SpottedWidgetClass);
+		if (NewWidget)
+		{
+			NewWidget->AttachedActor = this;
+		
+			NewWidget->AddToViewport(10);
+		}
 	}
 }
 

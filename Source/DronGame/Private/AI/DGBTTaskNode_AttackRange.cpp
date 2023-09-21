@@ -1,11 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DGBTTaskNode_AttackRange.h"
+#include "AI/DGBTTaskNode_AttackRange.h"
 
 #include "AIController.h"
 #include "DGAttributeComponent.h"
-#include "DrawDebugHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 
@@ -42,8 +41,6 @@ EBTNodeResult::Type UDGBTTaskNode_AttackRange::ExecuteTask(UBehaviorTreeComponen
 
 		FVector Direction = TargetActor->GetActorLocation() - From;
 		FRotator DirectionRotation = Direction.Rotation();
-
-		DrawDebugLine(GetWorld(), From, Direction * 100.0f, FColor::Red, true, 5);
 		
 		DirectionRotation.Pitch += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
 		DirectionRotation.Yaw += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
@@ -51,6 +48,8 @@ EBTNodeResult::Type UDGBTTaskNode_AttackRange::ExecuteTask(UBehaviorTreeComponen
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		Params.Instigator = MyPawn;
+
+		MyPawn->SetActorRotation(DirectionRotation);
 
 		AActor* NewProj = GetWorld()->SpawnActor<AActor>(ProjectileClass, From, DirectionRotation, Params);
 

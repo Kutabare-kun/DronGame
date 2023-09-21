@@ -14,8 +14,8 @@ void ADGPowerUp_HealthUp::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
 	UDGAttributeComponent* AttributeComp = UDGAttributeComponent::GetAttributes(OtherActor);
-	if (AttributeComp)
+	if (AttributeComp && AttributeComp->ApplyHealthChange(this, HealthUp))
 	{
-		AttributeComp->ApplyHealthChange(this, HealthUp);
+		Destroy();
 	}
 }

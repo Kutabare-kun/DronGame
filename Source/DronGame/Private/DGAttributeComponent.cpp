@@ -3,6 +3,8 @@
 
 #include "DGAttributeComponent.h"
 
+#include "DGGameMode.h"
+
 
 UDGAttributeComponent::UDGAttributeComponent()
 {
@@ -102,6 +104,15 @@ bool UDGAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 		Health = NewHealth;
 		
 		OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
+
+		if (ActualDelta < 0.0f && Health == 0.0f)
+		{
+			ADGGameMode* GM = GetWorld()->GetAuthGameMode<ADGGameMode>();
+			if (GM)
+			{
+				GM->OnActorKilled(GetOwner(), InstigatorActor);
+			}
+		}
 	}
 
 	return ActualDelta != 0.0f;
