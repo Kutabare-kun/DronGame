@@ -16,7 +16,6 @@ ADGProjectile::ADGProjectile()
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	SphereComp->SetCollisionProfileName("OverlapAllDynamic");
-	SphereComp->SetNotifyRigidBodyCollision(true);
 	SphereComp->SetSphereRadius(64.0f);
 	SphereComp->SetupAttachment(RootComponent);
 	
